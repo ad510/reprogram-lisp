@@ -16,8 +16,9 @@
               b)))
     ((eq 'if (car code))
       (destructuring-bind (a . b) (next (cddr code))
-        (cons (list 'if (car (transform (second code))) a NIL)
-              b)))
+        (destructuring-bind (c . d) (if (eq 'else (car b)) (next (cdr b)) (cons NIL b))
+          (cons (list 'if (car (transform (second code))) a c)
+                d))))
     ((eq 'while (car code))
       (destructuring-bind (a . b) (next (cddr code))
         (cons `(while ',(car (transform (second code))) ',a)
@@ -79,6 +80,8 @@ function testIf(val) {
     console.log(val);
     /* console.log("b") */
     console.log(10 + 1+(5) + 6);
+  } else if (val == false) {
+    console.log("not true");
   }
 }
 
@@ -91,7 +94,7 @@ function testWhile() {
 }
 
 console.log("Hello, world!");
-testIf(true);
 testIf(false);
+testIf(true);
 testWhile();
 #
