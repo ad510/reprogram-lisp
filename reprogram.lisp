@@ -61,7 +61,8 @@
         (case ch
           (#\/ (case (peek-char NIL in)
                  (#\/ (loop until (eql #\Newline (read-char in))))
-                 (#\* (loop until (and (eql #\* (read-char in)) (eql #\/ (peek-char NIL in)))))
+                 (#\* (progn (loop until (and (eql #\* (read-char in)) (eql #\/ (peek-char NIL in))))
+                             (read-char in)))
                  (otherwise (write-char ch out))))
           ((#\; #\,) (write-char #\Space out))
           (#\{ (write-string " progn(" out))
@@ -102,36 +103,43 @@
   (print msg))
 
 #? progn
-function subtract(a, b) {
-  return a - b;
+/*******************
+Butchered JavaScript (i.e. 100% valid Lisp!)
+*******************/
+
+console.log("Hello, world!");
+
+function factorial(n) {
+  if (n == 0) {
+    return 1; //quirk: return only works correctly if it's the last statement executed in function
+  } else {
+    return n * factorial(n - 1); //quirk: all operations are right-associative and ignore precedence
+  }
 }
 
 function testIf(val) {
   if (val) {
     console.log(val);
-    /*console.log("b");*/
-    //console.log("c");
-    console.log(10 + subtract(5, 1) + 6);
   } else if (val == false) {
     console.log("not true");
   }
 }
 
 function testWhile() {
-  var a = 0;
-  while (a < 3) {
+  var a = 3;
+  while (a > 0) {
     console.log("a = " + a);
-    a = a + 1;
+    a = a - 1;
   }
 }
 
 function testFor(min, max) {
-  for (var i = min; i < max; i ++) {
+  for (var i = min; i < max; i ++) { //quirk: need space between i and ++
     console.log(i);
   }
 }
 
-console.log("Hello, world!");
+console.log("5! is " + factorial(5));
 testIf(false);
 testIf(true);
 testWhile();
