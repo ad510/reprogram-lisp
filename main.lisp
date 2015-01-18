@@ -10,13 +10,19 @@
   (cond
     ((eq (car code) '{) (cons (cons 'progn (transform (cdr code)))
                               (find-sym '} code)))
-    ((eq (second code) '+)
-      (destructuring-bind (a . b) (next (cddr code))
-        (next (cons (list '+ (car code) a) b))))
+    ((eq (second code) '=) (ifx 'setf code))
+    ((eq (second code) '+) (ifx '+ code))
+    ((eq (second code) '-) (ifx '- code))
+    ((eq (second code) '*) (ifx '* code))
+    ((eq (second code) '/) (ifx '/ code))
     ((consp (second code))
       (next (cons (cons (first code) (transform (second code)))
                   (cddr code))))
     (t code)))
+
+(defun ifx (op code)
+  (destructuring-bind (a . b) (next (cddr code))
+    (next (cons (list op (car code) a) b))))
 
 (defun find-sym (sym code)
   (if (eq (car code) sym)
