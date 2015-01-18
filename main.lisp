@@ -9,7 +9,7 @@
 (defun next (code)
   (cond
     ((eq (car code) '{) (cons (cons 'progn (transform (cdr code)))
-                              (find-sym '} code)))
+                              (find-} (cdr code))))
     ((eq (second code) '=) (ifx 'setf code))
     ((eq (second code) '+) (ifx '+ code))
     ((eq (second code) '-) (ifx '- code))
@@ -23,6 +23,12 @@
 (defun ifx (op code)
   (destructuring-bind (a . b) (next (cddr code))
     (next (cons (list op (car code) a) b))))
+
+(defun find-} (code)
+  (case (car code)
+    ({ (find-} (cdr (find-} (cdr code)))))
+    (} (cdr code))
+    (otherwise (find-} (cdr code)))))
 
 (defun find-sym (sym code)
   (if (eq (car code) sym)
