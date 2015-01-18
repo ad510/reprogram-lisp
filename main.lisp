@@ -43,6 +43,7 @@
     ((eq '- (second code)) (ifx '- code))
     ((eq '* (second code)) (ifx '* code))
     ((eq '/ (second code)) (ifx '/ code))
+    ((eq '% (second code)) (ifx 'rem code))
     ((and (cdr code) (symbolp (first code)) (or (consp (second code)) (null (second code))))
       (cons (cons (first code) (transform (second code)))
             (cddr code)))
