@@ -23,7 +23,8 @@
       (destructuring-bind (a . b) (next (cddr code))
         (cons (list 'for (second code) a)
               b)))
-    ((eq 'var (car code)) (next (cdr code)))
+    ((or (eq 'var (car code)) (eq 'return (car code)))
+      (next (cdr code)))
     ((eq '! (car code))
       (destructuring-bind (a . b) (next (cdr code))
         (cons (list 'not a) b)))
@@ -94,12 +95,16 @@
   (print msg))
 
 #? progn
+function subtract(a, b) {
+  return a - b;
+}
+
 function testIf(val) {
   if (val) {
     console.log(val);
     /*console.log("b");*/
     //console.log("c");
-    console.log(10 + 1+(5) + 6);
+    console.log(10 + subtract(5, 1) + 6);
   } else if (val == false) {
     console.log("not true");
   }
