@@ -21,7 +21,7 @@
                 d))))
     ((eq 'while (car code))
       (destructuring-bind (a . b) (next (cddr code))
-        (cons `(while ',(car (transform (second code))) ',a)
+        (cons (list 'while (car (transform (second code))) a)
               b)))
     ((eq 'for (car code))
       (destructuring-bind (a . b) (next (cddr code))
@@ -67,8 +67,9 @@
       (if str-mode
         (write-char ch out)
         (case ch
-          ;(#\/ (case (peek-char NIL in)
-          ;       (#\/ 
+          (#\/ (case (peek-char NIL in)
+                 (#\/ (loop until (eql #\Newline (read-char in))))
+                 (otherwise (write-char ch out))))
           ((#\; #\,) (write-char #\Space out))
           (otherwise (write-char ch out))))
       (tokenize in out (if (eql #\" ch) (not str-mode) str-mode)))))
@@ -88,15 +89,13 @@
 (defmacro != (x y)
   `(not (eql ,x ,y)))
 
-(defun while (condi body)
-  (when (eval condi)
-    (eval body)
-    (while condi body)))
+(defmacro while (condi body)
+  `(loop while ,condi do ,body))
 
 (defmacro for (condi body)
   (destructuring-bind (a b c) (transform condi)
     `(progn ,a
-            (while ',b '(progn ,body ,c)))))
+            (while ,b (progn ,body ,c)))))
 
 (defun console.log (msg)
   (print msg))
@@ -105,7 +104,8 @@
 function testIf(val) {
   if (val) {
     console.log(val);
-    /* console.log("b") */
+    /* console.log("b"); */
+    //console.log("c");
     console.log(10 + 1+(5) + 6);
   } else if (val == false) {
     console.log("not true");
@@ -120,8 +120,8 @@ function testWhile() {
   }
 }
 
-function testFor() {
-  for (i = 0; i < 5; i = i + 1) {
+function testFor(min, max) {
+  for (i = min; i < max; i = i + 1) {
     console.log(i);
   }
 }
@@ -130,5 +130,5 @@ console.log("Hello, world!");
 testIf(false);
 testIf(true);
 testWhile();
-testFor();
+testFor(0, 5);
 #
