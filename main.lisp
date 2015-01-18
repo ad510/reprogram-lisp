@@ -61,9 +61,24 @@
     (cdr code)
     (find-sym sym (cdr code))))
 
+(defun tokenize (in out str-mode)
+  (let ((ch (read-char in)))
+    (when (char/= #\# ch)
+      (if str-mode
+        (write-char ch out)
+        (case ch
+          ;(#\/ (case (peek-char NIL in)
+          ;       (#\/ 
+          ((#\; #\,) (write-char #\Space out))
+          (otherwise (write-char ch out))))
+      (tokenize in out (if (eql #\" ch) (not str-mode) str-mode)))))
+
 (set-dispatch-macro-character #\# #\?
   #'(lambda (stream subchar numarg)
-    (transform (read-delimited-list #\# stream))
+    (let ((out (make-string-output-stream)))
+      (tokenize stream out NIL)
+      (write-char #\# out)
+      (transform (read-delimited-list #\# (make-string-input-stream (get-output-stream-string out)))))
 ))
 
 (setf undefined NIL)
@@ -106,9 +121,7 @@ function testWhile() {
 }
 
 function testFor() {
-  for (i = 0;
-       i < 5;
-       i = i + 1) {
+  for (i = 0; i < 5; i = i + 1) {
     console.log(i);
   }
 }
