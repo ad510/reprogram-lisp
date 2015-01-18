@@ -10,6 +10,10 @@
   (cond
     ((eq '{ (car code)) (cons (cons 'progn (transform (cdr code)))
                               (find-} (cdr code))))
+    ((eq 'function (car code))
+      (destructuring-bind (a . b) (next (cdddr code))
+        (cons (list 'defun (second code) (third code) a)
+              b)))
     ((eq 'if (car code))
       (destructuring-bind (a . b) (next (cddr code))
         (cons (list 'if (car (transform (second code))) a NIL)
@@ -29,7 +33,7 @@
     ((eq '- (second code)) (ifx '- code))
     ((eq '* (second code)) (ifx '* code))
     ((eq '/ (second code)) (ifx '/ code))
-    ((and (symbolp (first code)) (consp (second code)))
+    ((and (cdr code) (symbolp (first code)) (or (consp (second code)) (null (second code))))
       (cons (cons (first code) (transform (second code)))
             (cddr code)))
     (t code)))
@@ -40,7 +44,7 @@
 
 (defun find-} (code)
   (case (car code)
-    ({ (find-} (cdr (find-} (cdr code)))))
+    ({ (find-} (find-} (cdr code))))
     (} (cdr code))
     (otherwise (find-} (cdr code)))))
 
@@ -70,16 +74,24 @@
   (print msg))
 
 #? progn
+function testIf(val) {
+  if (val) {
+    console.log(val);
+    /* console.log("b") */
+    console.log(10 + 1+(5) + 6);
+  }
+}
+
+function testWhile() {
+  a = 0;
+  while (a < 5) {
+    console.log(a);
+    a = a + 1;
+  }
+}
+
 console.log("Hello, world!");
-a = true;
-if (a) {
-  console.log(a);
-  /* console.log("b") */
-  console.log(10 + 1+(5) + 6);
-}
-a = 0;
-while (a < 5) {
-  console.log(a);
-  a = a + 1;
-}
+testIf(true);
+testIf(false);
+testWhile();
 #

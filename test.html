@@ -1,14 +1,22 @@
 <script type="text/javascript">
+function testIf(val) {
+  if (val) {
+    console.log(val);
+    /* console.log("b") */
+    console.log(10 + 1+(5) + 6);
+  }
+}
+
+function testWhile() {
+  a = 0;
+  while (a < 5) {
+    console.log(a);
+    a = a + 1;
+  }
+}
+
 console.log("Hello, world!");
-a = true;
-if (a) {
-  console.log(a);
-  /* console.log("b") */
-  console.log(10 + 1+(5) + 6);
-}
-a = 0;
-while (a < 5) {
-  console.log(a);
-  a = a + 1;
-}
+testIf(true);
+testIf(false);
+testWhile();
 </script>
