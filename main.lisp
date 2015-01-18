@@ -27,6 +27,10 @@
     ((eq '! (car code))
       (destructuring-bind (a . b) (next (cdr code))
         (cons (list 'not a) b)))
+    ((eq '++ (second code)) (cons `(setf ,(first code) (1+ ,(first code)))
+                                  (cddr code)))
+    ((eq '-- (second code)) (cons `(setf ,(first code) (1- ,(first code)))
+                                  (cddr code)))
     ((eq '= (second code)) (ifx 'setf code))
     ((eq '== (second code)) (ifx 'eql code))
     ((eq '!= (second code)) (ifx '!= code))
@@ -110,7 +114,7 @@ function testWhile() {
 }
 
 function testFor(min, max) {
-  for (var i = min; i < max; i = i + 1) {
+  for (var i = min; i < max; i ++) {
     console.log(i);
   }
 }
