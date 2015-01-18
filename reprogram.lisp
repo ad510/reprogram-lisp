@@ -103,9 +103,9 @@
   (print msg))
 
 #? progn
-/*******************
-Butchered JavaScript (i.e. 100% valid Lisp!)
-*******************/
+/****************
+Quirky JavaScript (i.e. 100% valid Lisp!)
+****************/
 
 console.log("Hello, world!");
 
@@ -126,6 +126,7 @@ function testIf(val) {
 }
 
 function testWhile() {
+  //quirk: all vars are globally scoped, so this overwrites any variable "a" defined elsewhere
   var a = 3;
   while (a > 0) {
     console.log("a = " + a);
