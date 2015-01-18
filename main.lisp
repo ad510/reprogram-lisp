@@ -19,6 +19,12 @@
         (cons `(while ',(car (transform (second code))) ',a)
               b)))
     ((eq '= (second code)) (ifx 'setf code))
+    ((eq '== (second code)) (ifx 'eql code))
+    ((eq '!= (second code)) (ifx '!= code))
+    ((eq '< (second code)) (ifx '< code))
+    ((eq '> (second code)) (ifx '> code))
+    ((eq '<= (second code)) (ifx '<= code))
+    ((eq '>= (second code)) (ifx '>= code))
     ((eq '+ (second code)) (ifx '+ code))
     ((eq '- (second code)) (ifx '- code))
     ((eq '* (second code)) (ifx '* code))
@@ -52,6 +58,9 @@
 (setf false NIL)
 (setf true t)
 
+(defmacro != (x y)
+  `(not (eql ,x ,y)))
+
 (defun while (condi body)
   (when (eval condi)
     (eval body)
@@ -68,9 +77,8 @@ if (a) {
   /* console.log("b") */
   console.log(10 + 1+(5) + 6);
 }
-console.log("c");
 a = 0;
-while ((< a 5)) {
+while (a < 5) {
   console.log(a);
   a = a + 1;
 }
