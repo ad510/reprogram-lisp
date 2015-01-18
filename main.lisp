@@ -15,9 +15,9 @@
     ((eq (second code) '-) (ifx '- code))
     ((eq (second code) '*) (ifx '* code))
     ((eq (second code) '/) (ifx '/ code))
-    ((consp (second code))
-      (next (cons (cons (first code) (transform (second code)))
-                  (cddr code))))
+    ((and (symbolp (first code)) (consp (second code)))
+      (cons (cons (first code) (transform (second code)))
+            (cddr code)))
     (t code)))
 
 (defun ifx (op code)
