@@ -1,7 +1,6 @@
 (defun transform (code)
   (cond
     ((not (consp code)) code)
-    ((eq '/* (car code)) (transform (find-sym '*/ code)))
     (t (destructuring-bind (a . b) (next code)
          (cons a (transform b))))))
 
@@ -47,11 +46,6 @@
   (destructuring-bind (a . b) (next (cddr code))
     (next (cons (list op (car code) a) b))))
 
-(defun find-sym (sym code)
-  (if (eq (car code) sym)
-    (cdr code)
-    (find-sym sym (cdr code))))
-
 (defun tokenize (in out str-mode)
   (let ((ch (read-char in)))
     (when (char/= #\# ch)
@@ -60,6 +54,7 @@
         (case ch
           (#\/ (case (peek-char NIL in)
                  (#\/ (loop until (eql #\Newline (read-char in))))
+                 (#\* (loop until (and (eql #\* (read-char in)) (eql #\/ (peek-char NIL in)))))
                  (otherwise (write-char ch out))))
           ((#\; #\,) (write-char #\Space out))
           (#\{ (write-string " progn(" out))
@@ -97,7 +92,7 @@
 function testIf(val) {
   if (val) {
     console.log(val);
-    /* console.log("b"); */
+    /*console.log("b");*/
     //console.log("c");
     console.log(10 + 1+(5) + 6);
   } else if (val == false) {
