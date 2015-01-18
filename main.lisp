@@ -2,14 +2,11 @@
   (cond
     ((not (consp code)) code)
     ((eq '/* (car code)) (transform (find-sym '*/ code)))
-    ((eq '} (car code)) NIL)
     (t (destructuring-bind (a . b) (next code)
          (cons a (transform b))))))
 
 (defun next (code)
   (cond
-    ((eq '{ (car code)) (cons (cons 'progn (transform (cdr code)))
-                              (find-} (cdr code))))
     ((eq 'function (car code))
       (destructuring-bind (a . b) (next (cdddr code))
         (cons (list 'defun (second code) (third code) a)
@@ -50,12 +47,6 @@
   (destructuring-bind (a . b) (next (cddr code))
     (next (cons (list op (car code) a) b))))
 
-(defun find-} (code)
-  (case (car code)
-    ({ (find-} (find-} (cdr code))))
-    (} (cdr code))
-    (otherwise (find-} (cdr code)))))
-
 (defun find-sym (sym code)
   (if (eq (car code) sym)
     (cdr code)
@@ -71,6 +62,8 @@
                  (#\/ (loop until (eql #\Newline (read-char in))))
                  (otherwise (write-char ch out))))
           ((#\; #\,) (write-char #\Space out))
+          (#\{ (write-string " progn(" out))
+          (#\} (write-char #\) out))
           (otherwise (write-char ch out))))
       (tokenize in out (if (eql #\" ch) (not str-mode) str-mode)))))
 
