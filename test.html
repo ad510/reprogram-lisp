@@ -11,9 +11,17 @@ function testIf(val) {
 
 function testWhile() {
   a = 0;
-  while (a < 5) {
+  while (a < 3) {
     console.log(a);
     a = a + 1;
+  }
+}
+
+function testFor() {
+  for (i = 0;
+       i < 5;
+       i = i + 1) {
+    console.log(i);
   }
 }
 
@@ -21,4 +29,5 @@ console.log("Hello, world!");
 testIf(false);
 testIf(true);
 testWhile();
+testFor();
 </script>

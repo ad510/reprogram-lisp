@@ -23,6 +23,10 @@
       (destructuring-bind (a . b) (next (cddr code))
         (cons `(while ',(car (transform (second code))) ',a)
               b)))
+    ((eq 'for (car code))
+      (destructuring-bind (a . b) (next (cddr code))
+        (cons (list 'for (second code) a)
+              b)))
     ((eq '! (car code))
       (destructuring-bind (a . b) (next (cdr code))
         (cons (list 'not a) b)))
@@ -74,6 +78,11 @@
     (eval body)
     (while condi body)))
 
+(defmacro for (condi body)
+  (destructuring-bind (a b c) (transform condi)
+    `(progn ,a
+            (while ',b '(progn ,body ,c)))))
+
 (defun console.log (msg)
   (print msg))
 
@@ -90,9 +99,17 @@ function testIf(val) {
 
 function testWhile() {
   a = 0;
-  while (a < 5) {
+  while (a < 3) {
     console.log(a);
     a = a + 1;
+  }
+}
+
+function testFor() {
+  for (i = 0;
+       i < 5;
+       i = i + 1) {
+    console.log(i);
   }
 }
 
@@ -100,4 +117,5 @@ console.log("Hello, world!");
 testIf(false);
 testIf(true);
 testWhile();
+testFor();
 #
