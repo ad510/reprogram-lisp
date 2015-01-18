@@ -10,6 +10,10 @@
   (cond
     ((eq '{ (car code)) (cons (cons 'progn (transform (cdr code)))
                               (find-} (cdr code))))
+    ((eq 'if (car code))
+      (destructuring-bind (a . b) (next (cddr code))
+        (cons (list 'if (car (transform (second code))) a NIL)
+              b)))
     ((eq '= (second code)) (ifx 'setf code))
     ((eq '+ (second code)) (ifx '+ code))
     ((eq '- (second code)) (ifx '- code))
@@ -40,13 +44,18 @@
     (transform (read-delimited-list #\# stream))
 ))
 
+(setf undefined NIL)
+(setf false NIL)
+(setf true t)
+
 (defun console.log (msg)
   (print msg))
 
 #? progn
 console.log("Hello, world!");
-{
-  console.log("a");
+a = true;
+if (a) {
+  console.log(a);
   /* console.log("b") */
   console.log(10 + 1+(5) + 6);
 }
