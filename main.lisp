@@ -14,6 +14,10 @@
       (destructuring-bind (a . b) (next (cddr code))
         (cons (list 'if (car (transform (second code))) a NIL)
               b)))
+    ((eq 'while (car code))
+      (destructuring-bind (a . b) (next (cddr code))
+        (cons `(while ',(car (transform (second code))) ',a)
+              b)))
     ((eq '= (second code)) (ifx 'setf code))
     ((eq '+ (second code)) (ifx '+ code))
     ((eq '- (second code)) (ifx '- code))
@@ -48,6 +52,11 @@
 (setf false NIL)
 (setf true t)
 
+(defun while (condi body)
+  (when (eval condi)
+    (eval body)
+    (while condi body)))
+
 (defun console.log (msg)
   (print msg))
 
@@ -60,4 +69,9 @@ if (a) {
   console.log(10 + 1+(5) + 6);
 }
 console.log("c");
+a = 0;
+while ((< a 5)) {
+  console.log(a);
+  a = a + 1;
+}
 #
