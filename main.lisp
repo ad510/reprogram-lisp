@@ -23,6 +23,7 @@
       (destructuring-bind (a . b) (next (cddr code))
         (cons (list 'for (second code) a)
               b)))
+    ((eq 'var (car code)) (next (cdr code)))
     ((eq '! (car code))
       (destructuring-bind (a . b) (next (cdr code))
         (cons (list 'not a) b)))
@@ -101,7 +102,7 @@ function testIf(val) {
 }
 
 function testWhile() {
-  a = 0;
+  var a = 0;
   while (a < 3) {
     console.log(a);
     a = a + 1;
@@ -109,7 +110,7 @@ function testWhile() {
 }
 
 function testFor(min, max) {
-  for (i = min; i < max; i = i + 1) {
+  for (var i = min; i < max; i = i + 1) {
     console.log(i);
   }
 }
