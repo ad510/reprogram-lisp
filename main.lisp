@@ -2,13 +2,21 @@
   (cond
     ((not (consp code)) code)
     ((eq (car code) '/*) (transform (find-sym '*/ code)))
-    ((eq (car code) '{) (cons (cons 'progn (transform (cdr code)))
-                              (transform (find-sym '} code))))
     ((eq (car code) '}) NIL)
+    (t (destructuring-bind (a . b) (next code)
+         (cons a (transform b))))))
+
+(defun next (code)
+  (cond
+    ((eq (car code) '{) (cons (cons 'progn (transform (cdr code)))
+                              (find-sym '} code)))
+    ((eq (second code) '+)
+      (destructuring-bind (a . b) (next (cddr code))
+        (next (cons (list '+ (car code) a) b))))
     ((consp (second code))
-      (cons (cons (first code) (transform (second code)))
-            (transform (cddr code))))
-    (t (cons (car code) (transform (cdr code))))))
+      (next (cons (cons (first code) (transform (second code)))
+                  (cddr code))))
+    (t code)))
 
 (defun find-sym (sym code)
   (if (eq (car code) sym)
@@ -28,7 +36,7 @@ console.log("Hello, world!");
 {
   console.log("a");
   /* console.log("b") */
-  console.log("d");
+  console.log(10 + 1+(5) + 6);
 }
 console.log("c");
 #
