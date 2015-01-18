@@ -39,7 +39,7 @@
     ((eq '> (second code)) (ifx '> code))
     ((eq '<= (second code)) (ifx '<= code))
     ((eq '>= (second code)) (ifx '>= code))
-    ((eq '+ (second code)) (ifx '+ code))
+    ((eq '+ (second code)) (ifx 'js+ code))
     ((eq '- (second code)) (ifx '- code))
     ((eq '* (second code)) (ifx '* code))
     ((eq '/ (second code)) (ifx '/ code))
@@ -92,6 +92,12 @@
     `(progn ,a
             (while ,b (progn ,body ,c)))))
 
+(defun js+ (x y)
+  (if (or (stringp x) (stringp y))
+    (concatenate 'string (if (stringp x) x (write-to-string x))
+                         (if (stringp y) y (write-to-string y)))
+    (+ x y)))
+
 (defun console.log (msg)
   (print msg))
 
@@ -114,7 +120,7 @@ function testIf(val) {
 function testWhile() {
   var a = 0;
   while (a < 3) {
-    console.log(a);
+    console.log("a = " + a);
     a = a + 1;
   }
 }
