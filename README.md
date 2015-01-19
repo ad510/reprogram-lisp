@@ -3,6 +3,8 @@ Reprogramming Lisp
 
 The most powerful language in the world is one that you can turn into any language you want! So how about turning it into a completely different language, say, JavaScript?
 
+I made this at PennApps Winter 2015.
+
 Usage
 -----
 
