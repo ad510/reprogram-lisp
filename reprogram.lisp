@@ -1,8 +1,8 @@
 (defun transform (code)
-  (cond
-    ((not (consp code)) code)
-    (t (destructuring-bind (a . b) (next code)
-         (cons a (transform b))))))
+  (if (consp code)
+    (destructuring-bind (a . b) (next code)
+      (cons a (transform b)))
+    code))
 
 (defun next (code)
   (cond
@@ -107,8 +107,7 @@
                          (if (stringp y) y (write-to-string y)))
     (+ x y)))
 
-(setf console.log
-  (lambda (msg) (print msg)))
+(setf console.log (symbol-function 'print))
 
 #? progn
 /****************
