@@ -32,9 +32,14 @@ function testFor(min, max) {
   }
 }
 
+var testLambda = function(fn) {
+  fn();
+}
+
 console.log("5! is " + factorial(5));
 testIf(false);
 testIf(true);
 testWhile();
 testFor(0, 5);
+testLambda(function() {console.log("lambda")});
 </script>

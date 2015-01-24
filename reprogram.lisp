@@ -6,10 +6,17 @@
 
 (defun next (code)
   (cond
+    ((eq '{} (car code))
+      (cons (cons 'progn (transform (second code)))
+            (cddr code)))
     ((eq 'function (car code))
-      (destructuring-bind (a . b) (next (cdddr code))
-        (cons (list 'defun (second code) (third code) a)
-              b)))
+      (if (and (second code) (symbolp (second code)))
+        (destructuring-bind (a . b) (next (cdddr code))
+          (cons `(setf ,(second code) (lambda ,(third code) ,a))
+                b))
+        (destructuring-bind (a . b) (next (cddr code))
+          (cons (list 'lambda (second code) a)
+                b))))
     ((eq 'if (car code))
       (destructuring-bind (a . b) (next (cddr code))
         (destructuring-bind (c . d) (if (eq 'else (car b)) (next (cdr b)) (cons NIL b))
@@ -45,7 +52,7 @@
     ((eq '/ (second code)) (ifx '/ code))
     ((eq '% (second code)) (ifx 'rem code))
     ((and (cdr code) (symbolp (first code)) (or (consp (second code)) (null (second code))))
-      (cons (cons (first code) (transform (second code)))
+      (cons (list* 'funcall (first code) (transform (second code)))
             (cddr code)))
     (t code)))
 
@@ -65,7 +72,7 @@
                              (read-char in)))
                  (otherwise (write-char ch out))))
           ((#\; #\,) (write-char #\Space out))
-          (#\{ (write-string " progn(" out))
+          (#\{ (write-string " {}(" out))
           (#\} (write-char #\) out))
           (otherwise (write-char ch out))))
       (tokenize in out (if (eql #\" ch) (not str-mode) str-mode)))))
@@ -99,8 +106,8 @@
                          (if (stringp y) y (write-to-string y)))
     (+ x y)))
 
-(defun console.log (msg)
-  (print msg))
+(setf console.log
+  (lambda (msg) (print msg)))
 
 #? progn
 /****************
@@ -140,9 +147,14 @@ function testFor(min, max) {
   }
 }
 
+var testLambda = function(fn) {
+  fn();
+}
+
 console.log("5! is " + factorial(5));
 testIf(false);
 testIf(true);
 testWhile();
 testFor(0, 5);
+testLambda(function() {console.log("lambda")});
 #
