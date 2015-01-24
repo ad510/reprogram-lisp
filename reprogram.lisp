@@ -52,13 +52,13 @@
     ((eq '/ (second code)) (ifx '/ code))
     ((eq '% (second code)) (ifx 'rem code))
     ((and (cdr code) (symbolp (first code)) (or (consp (second code)) (null (second code))))
-      (cons (list* 'funcall (first code) (transform (second code)))
-            (cddr code)))
+      (next (cons (list* 'funcall (first code) (transform (second code)))
+                  (cddr code))))
     (t code)))
 
 (defun ifx (op code)
   (destructuring-bind (a . b) (next (cddr code))
-    (next (cons (list op (car code) a) b))))
+    (cons (list op (car code) a) b)))
 
 (defun tokenize (in out str-mode)
   (let ((ch (read-char in)))
@@ -121,7 +121,7 @@ function factorial(n) {
   if (n == 0) {
     return 1; //quirk: return only works correctly if it's the last statement executed in function
   } else {
-    return n * factorial(n - 1); //quirk: all operations are right-associative and ignore precedence
+    return factorial(n - 1) * n; //quirk: all operations are right-associative and ignore precedence
   }
 }
 

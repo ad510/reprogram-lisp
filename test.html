@@ -5,7 +5,7 @@ function factorial(n) {
   if (n == 0) {
     return 1; //quirk: return only works correctly if it's the last statement executed in function
   } else {
-    return n * factorial(n - 1); //quirk: all operations are right-associative and ignore precedence
+    return factorial(n - 1) * n; //quirk: all operations are right-associative and ignore precedence
   }
 }
 
