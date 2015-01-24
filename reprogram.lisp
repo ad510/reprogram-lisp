@@ -67,9 +67,10 @@
         (write-char ch out)
         (case ch
           (#\/ (case (peek-char NIL in)
-                 (#\/ (loop until (eql #\Newline (read-char in))))
+                 (#\/ (loop until (eql #\Newline (peek-char NIL in)) do (read-char in)))
                  (#\* (progn (loop until (and (eql #\* (read-char in)) (eql #\/ (peek-char NIL in))))
-                             (read-char in)))
+                             (read-char in)
+                             (write-char #\Space out)))
                  (otherwise (write-char ch out))))
           ((#\; #\,) (write-char #\Space out))
           (#\{ (write-string " {}(" out))
