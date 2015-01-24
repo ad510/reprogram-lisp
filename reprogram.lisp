@@ -19,7 +19,7 @@
                 b))))
     ((eq 'if (car code))
       (destructuring-bind (a . b) (next (cddr code))
-        (destructuring-bind (c . d) (if (eq 'else (car b)) (next (cdr b)) (cons NIL b))
+        (destructuring-bind (c . d) (if (eq 'else (car b)) (next (cdr b)) (cons nil b))
           (cons (list 'if (car (transform (second code))) a c)
                 d))))
     ((eq 'while (car code))
@@ -66,9 +66,9 @@
       (if str-mode
         (write-char ch out)
         (case ch
-          (#\/ (case (peek-char NIL in)
-                 (#\/ (loop until (eql #\Newline (peek-char NIL in)) do (read-char in)))
-                 (#\* (progn (loop until (and (eql #\* (read-char in)) (eql #\/ (peek-char NIL in))))
+          (#\/ (case (peek-char nil in)
+                 (#\/ (loop until (eql #\Newline (peek-char nil in)) do (read-char in)))
+                 (#\* (progn (loop until (and (eql #\* (read-char in)) (eql #\/ (peek-char nil in))))
                              (read-char in)
                              (write-char #\Space out)))
                  (otherwise (write-char ch out))))
@@ -81,13 +81,13 @@
 (set-dispatch-macro-character #\# #\?
   #'(lambda (stream subchar numarg)
     (let ((out (make-string-output-stream)))
-      (tokenize stream out NIL)
+      (tokenize stream out nil)
       (write-char #\# out)
       (transform (read-delimited-list #\# (make-string-input-stream (get-output-stream-string out)))))
 ))
 
-(setf undefined NIL)
-(setf false NIL)
+(setf undefined nil)
+(setf false nil)
 (setf true t)
 
 (defmacro != (x y)
